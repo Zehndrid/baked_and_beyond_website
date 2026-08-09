@@ -44,6 +44,7 @@
         .type-badge { font-weight: bold; }
         .type-Delivery { color: #d9534f; }
         .type-Pickup { color: #5cb85c; }
+        .ref-text { font-family: monospace; color: #004085; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -61,6 +62,7 @@
                 <th>Flavor</th>
                 <th>Qty</th>
                 <th>Payment</th>
+                <th>Ref. Number</th>
                 <th>Status</th>
             </tr>
         </thead>
@@ -75,6 +77,7 @@
                 <td>{{ order.flavor }}</td>
                 <td>{{ order.quantity }}</td>
                 <td>{{ order.payment }}</td>
+                <td class="ref-text">{{ order.reference_number }}</td>
                 <td>
                     <form action="/update_status/{{ order.id }}" method="POST" class="status-form">
                         <select name="status" class="status-select">
@@ -89,7 +92,7 @@
             </tr>
             {% else %}
             <tr>
-                <td colspan="9" style="text-align: center;">No orders yet.</td>
+                <td colspan="10" style="text-align: center;">No orders yet.</td>
             </tr>
             {% endfor %}
         </tbody>
