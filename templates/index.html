@@ -56,6 +56,11 @@
             width: 100%;
             height: 250px;
             object-fit: cover;
+            cursor: zoom-in;
+            transition: transform 0.3s ease;
+        }
+        .product-card img:hover {
+            transform: scale(1.03); 
         }
         .product-info {
             padding: 15px;
@@ -110,17 +115,76 @@
             border-radius: 5px;
             text-align: center;
             margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-        .qr-code {
-            max-width: 250px;
-            height: auto;
-            margin-top: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         #address-group {
             display: none; 
+        }
+        
+        #qr-container {
+            display: none;
+            background: white;
+            color: var(--dark-text);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .qr-image {
+            max-width: 250px;
+            height: auto;
+            border-radius: 8px;
+            display: none; 
+            margin: 0 auto;
+        }
+        .payment-note {
+            color: #d9534f;
+            font-weight: bold;
+            margin-top: 15px;
+            font-size: 0.95em;
+        }
+        
+        /* Receipt Upload Styling */
+        #receipt-group {
+            display: none;
+            background: var(--brand-beige);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        #receipt-group label {
+            color: var(--brand-blue);
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.85); 
+            opacity: 0;
+            transition: opacity 0.2s ease-out; 
+        }
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+        }
+        .modal-content {
+            max-width: 90%;
+            max-height: 90vh;
+            border-radius: 12px;
+            transform: scale(0.95);
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+        .modal.show .modal-content {
+            transform: scale(1);
         }
 
         footer {
@@ -142,22 +206,8 @@
         
         {% if order_success %}
         <div class="success-msg" id="success-message">
-            <strong>Thank you, {{ name }}!</strong> Your order has been placed successfully.
-            
-            {% if payment_method == 'Gcash' %}
-            <p>Please scan the GCash QR code below to complete your payment.</p>
-            <img src="{{ url_for('static', filename='images/gcash qr code.jpg') }}" alt="GCash QR Code" class="qr-code">
-            
-            {% elif payment_method == 'Bank Transfer' %}
-            <p>Please scan the Metrobank QR code below to complete your payment.</p>
-            <img src="{{ url_for('static', filename='images/metrobank qr code.jpg') }}" alt="Metrobank QR Code" class="qr-code">
-            
-            {% else %}
-            <p>We will contact you shortly regarding your payment and order details.</p>
-            {% endif %}
+            <strong>Thank you, {{ name }}!</strong> Your order and payment receipt have been successfully received. We will process your cookies shortly!
         </div>
-        
-        <!-- JavaScript to automatically scroll the user to the success message and QR code -->
         <script>
             document.addEventListener("DOMContentLoaded", function() {
                 document.getElementById('success-message').scrollIntoView({ behavior: 'smooth' });
@@ -170,9 +220,7 @@
         <div class="products-grid">
             {% for product in products %}
             <div class="product-card">
-                <a href="{{ url_for('static', filename='images/' + product.image) }}" target="_blank">
-                    <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}" style="cursor: zoom-in;">
-                </a>
+                <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}" onclick="openModal(this.src)">
                 <div class="product-info">
                     <h3>{{ product.name }}</h3>
                     <p>{{ product.desc }}</p>
@@ -189,18 +237,20 @@
 
         <div class="order-section" id="order-form">
             <h2 style="text-align: center;">Place Your Order</h2>
-            <form action="/" method="POST">
-                <input type="text" name="name" placeholder="Your Full Name" required>
-                <input type="text" name="contact" placeholder="Phone Number / Email" required>
+            
+            <!-- IMPORTANT: enctype="multipart/form-data" is required for file uploads -->
+            <form action="/" method="POST" id="main-order-form" enctype="multipart/form-data">
+                <input type="text" name="name" id="name" placeholder="Your Full Name" required oninput="checkFormInputs()">
+                <input type="text" name="contact" id="contact" placeholder="Phone Number / Email" required oninput="checkFormInputs()">
                 
-                <select name="flavor" required>
+                <select name="flavor" id="flavor" required onchange="checkFormInputs()">
                     <option value="" disabled selected>Select a Flavor...</option>
                     {% for product in products %}
                     <option value="{{ product.name }}">{{ product.name }} - ₱{{ product.price }}</option>
                     {% endfor %}
                 </select>
 
-                <input type="number" name="quantity" placeholder="Quantity" min="1" required>
+                <input type="number" name="quantity" id="quantity" placeholder="Quantity" min="1" required oninput="checkFormInputs()">
                 
                 <select name="delivery_option" id="delivery_option" required onchange="toggleAddress()">
                     <option value="" disabled selected>Order Type (Pickup or Delivery)...</option>
@@ -209,19 +259,35 @@
                 </select>
 
                 <div id="address-group">
-                    <input type="text" name="address" id="address" placeholder="Exact Delivery Address">
+                    <input type="text" name="address" id="address" placeholder="Exact Delivery Address" oninput="checkFormInputs()">
                 </div>
 
-                <select name="payment" required>
+                <select name="payment" id="payment_method" required onchange="handlePaymentSelection()">
                     <option value="" disabled selected>Mode of Payment...</option>
                     <option value="Gcash">GCash</option>
-                    <option value="Maya">Maya</option>
                     <option value="Bank Transfer">Bank Transfer (Metrobank)</option>
                 </select>
+
+                <div id="qr-container">
+                    <h3 style="margin-top: 0;">Scan to Pay</h3>
+                    <img src="{{ url_for('static', filename='images/gcash qr code.jpg') }}" id="qr-gcash" class="qr-image" alt="GCash">
+                    <img src="{{ url_for('static', filename='images/metrobank qr code.jpg') }}" id="qr-bank" class="qr-image" alt="Metrobank">
+                    <p class="payment-note">⚠️ Note: You must pay first and upload your receipt below to submit your order successfully.</p>
+                </div>
+
+                <!-- NEW: Receipt Upload Box -->
+                <div id="receipt-group">
+                    <label for="receipt">Upload Screenshot of Payment Receipt:</label>
+                    <input type="file" name="receipt" id="receipt" accept="image/*">
+                </div>
 
                 <button type="submit">Submit Order</button>
             </form>
         </div>
+    </div>
+
+    <div id="imageModal" class="modal" onclick="closeModal()">
+        <img class="modal-content" id="expandedImg">
     </div>
 
     <footer>
@@ -244,6 +310,73 @@
                 addressInput.required = false;
                 addressInput.value = ""; 
             }
+            checkFormInputs(); 
+        }
+
+        function handlePaymentSelection() {
+            const name = document.getElementById("name").value.trim();
+            const contact = document.getElementById("contact").value.trim();
+            const flavor = document.getElementById("flavor").value;
+            const quantity = document.getElementById("quantity").value;
+            const delivery = document.getElementById("delivery_option").value;
+            const address = document.getElementById("address").value.trim();
+            const payment = document.getElementById("payment_method");
+            
+            const receiptGroup = document.getElementById("receipt-group");
+            const receiptInput = document.getElementById("receipt");
+            
+            let isFormValid = name && contact && flavor && quantity && delivery;
+            if (delivery === "Delivery" && !address) {
+                isFormValid = false;
+            }
+
+            if (!isFormValid && payment.value !== "") {
+                alert("Please fill out all order details above before selecting a payment method.");
+                payment.value = ""; 
+                document.getElementById("qr-container").style.display = "none";
+                receiptGroup.style.display = "none";
+                receiptInput.required = false;
+                return;
+            }
+
+            if (isFormValid && payment.value) {
+                document.getElementById("qr-container").style.display = "block";
+                receiptGroup.style.display = "block";
+                receiptInput.required = true; // Makes uploading the receipt mandatory
+                
+                if (payment.value === "Gcash") {
+                    document.getElementById("qr-gcash").style.display = "block";
+                    document.getElementById("qr-bank").style.display = "none";
+                } else if (payment.value === "Bank Transfer") {
+                    document.getElementById("qr-gcash").style.display = "none";
+                    document.getElementById("qr-bank").style.display = "block";
+                }
+            }
+        }
+
+        function checkFormInputs() {
+            const payment = document.getElementById("payment_method");
+            if (payment.value !== "") {
+                handlePaymentSelection(); 
+            }
+        }
+
+        const modal = document.getElementById("imageModal");
+        const expandedImg = document.getElementById("expandedImg");
+
+        function openModal(imageSrc) {
+            expandedImg.src = imageSrc;
+            modal.style.display = "flex";
+            setTimeout(() => {
+                modal.classList.add("show");
+            }, 10);
+        }
+
+        function closeModal() {
+            modal.classList.remove("show");
+            setTimeout(() => {
+                modal.style.display = "none";
+            }, 200);
         }
     </script>
 </body>
