@@ -25,7 +25,7 @@
         .logo {
             max-width: 300px;
             height: auto;
-            margin-bottom: 15px; /* Adds space between logo and tagline */
+            margin-bottom: 15px; 
         }
         .tagline {
             color: var(--brand-blue);
@@ -64,6 +64,12 @@
             color: var(--brand-blue);
             font-size: 1.2em;
             font-weight: bold;
+        }
+        .old-price {
+            text-decoration: line-through;
+            color: #888;
+            font-size: 0.8em;
+            margin-right: 5px;
         }
         .order-section {
             background: var(--brand-blue);
@@ -106,7 +112,6 @@
             margin-bottom: 20px;
         }
         
-        /* Hides the address field by default */
         #address-group {
             display: none; 
         }
@@ -145,7 +150,13 @@
                 <div class="product-info">
                     <h3>{{ product.name }}</h3>
                     <p>{{ product.desc }}</p>
-                    <p class="price">₱{{ product.price }}</p>
+                    <p class="price">
+                        <!-- Displays old price with strikethrough if it exists (for the promo) -->
+                        {% if product.original_price %}
+                        <span class="old-price">₱{{ product.original_price }}</span>
+                        {% endif %}
+                        ₱{{ product.price }}
+                    </p>
                 </div>
             </div>
             {% endfor %}
@@ -166,14 +177,12 @@
 
                 <input type="number" name="quantity" placeholder="Quantity" min="1" required>
                 
-                <!-- NEW: Delivery Option Toggle -->
                 <select name="delivery_option" id="delivery_option" required onchange="toggleAddress()">
                     <option value="" disabled selected>Order Type (Pickup or Delivery)...</option>
                     <option value="Pickup">Pickup</option>
                     <option value="Delivery">Delivery</option>
                 </select>
 
-                <!-- NEW: Hidden Address Field -->
                 <div id="address-group">
                     <input type="text" name="address" id="address" placeholder="Exact Delivery Address">
                 </div>
@@ -197,7 +206,6 @@
         <p>📍 Pasig City, Metro Manila, Philippines</p>
     </footer>
 
-    <!-- JavaScript to handle showing/hiding the address field -->
     <script>
         function toggleAddress() {
             var deliveryOption = document.getElementById("delivery_option").value;
@@ -206,11 +214,11 @@
             
             if (deliveryOption === "Delivery") {
                 addressGroup.style.display = "block";
-                addressInput.required = true; // Makes the address mandatory if they choose Delivery
+                addressInput.required = true;
             } else {
                 addressGroup.style.display = "none";
                 addressInput.required = false;
-                addressInput.value = ""; // Clears the field if they switch back to Pickup
+                addressInput.value = ""; 
             }
         }
     </script>
