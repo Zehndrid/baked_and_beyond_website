@@ -11,30 +11,39 @@
             color: #2C3E50;
             padding: 20px;
         }
-        h1 {
-            text-align: center;
-            color: #4B799E;
-        }
+        h1 { text-align: center; color: #4B799E; }
         table {
             width: 100%;
-            max-width: 1000px;
+            max-width: 1400px;
             margin: 20px auto;
             border-collapse: collapse;
             background-color: white;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-size: 0.9em;
         }
         th, td {
-            padding: 12px 15px;
+            padding: 10px 12px;
             border: 1px solid #ddd;
             text-align: left;
         }
-        th {
+        th { background-color: #4B799E; color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        
+        .status-form { display: flex; gap: 5px; }
+        .status-select { padding: 4px; border-radius: 4px; }
+        .save-btn {
             background-color: #4B799E;
             color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
         }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
+        .save-btn:hover { background-color: #2C3E50; }
+        
+        .type-badge { font-weight: bold; }
+        .type-Delivery { color: #d9534f; }
+        .type-Pickup { color: #5cb85c; }
     </style>
 </head>
 <body>
@@ -44,27 +53,43 @@
     <table>
         <thead>
             <tr>
-                <th>Order ID</th>
-                <th>Customer Name</th>
-                <th>Contact Info</th>
+                <th>Date & Time</th>
+                <th>Customer</th>
+                <th>Contact</th>
+                <th>Type</th>
+                <th>Address</th>
                 <th>Flavor</th>
-                <th>Quantity</th>
-                <th>Payment Method</th>
+                <th>Qty</th>
+                <th>Payment</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
             {% for order in orders %}
             <tr>
-                <td>{{ order.id }}</td>
+                <td>{{ order.order_date.strftime('%Y-%m-%d %H:%M') }}</td>
                 <td>{{ order.customer_name }}</td>
                 <td>{{ order.contact }}</td>
+                <td class="type-badge type-{{ order.delivery_option }}">{{ order.delivery_option }}</td>
+                <td>{{ order.address }}</td>
                 <td>{{ order.flavor }}</td>
                 <td>{{ order.quantity }}</td>
                 <td>{{ order.payment }}</td>
+                <td>
+                    <form action="/update_status/{{ order.id }}" method="POST" class="status-form">
+                        <select name="status" class="status-select">
+                            <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                            <option value="Baking" {% if order.status == 'Baking' %}selected{% endif %}>Baking</option>
+                            <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                            <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                        </select>
+                        <button type="submit" class="save-btn">Save</button>
+                    </form>
+                </td>
             </tr>
             {% else %}
             <tr>
-                <td colspan="6" style="text-align: center;">No orders yet.</td>
+                <td colspan="9" style="text-align: center;">No orders yet.</td>
             </tr>
             {% endfor %}
         </tbody>
