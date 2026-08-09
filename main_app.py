@@ -21,7 +21,7 @@ def get_ph_time():
 
 # Create the Database Model for Orders
 class Order(db.Model):
-    __tablename__ = 'customer_orders_v2' # Updated to generate a fresh table for the new address column
+    __tablename__ = 'customer_orders_v2' 
     id = db.Column(db.Integer, primary_key=True)
     customer_name = db.Column(db.String(100), nullable=False)
     contact = db.Column(db.String(100), nullable=False)
@@ -29,18 +29,18 @@ class Order(db.Model):
     quantity = db.Column(db.Integer, nullable=False)
     payment = db.Column(db.String(50), nullable=False)
     
-    # NEW: Delivery type and Address
     delivery_option = db.Column(db.String(50), nullable=False)
     address = db.Column(db.String(255), nullable=True)
     
     status = db.Column(db.String(50), default="Pending")
     order_date = db.Column(db.DateTime, default=get_ph_time)
 
+# UPDATED: New pricing and promo bundle added
 PRODUCTS = [
     {
         "id": "classic",
         "name": "Classic Choco Chip",
-        "price": 85,
+        "price": 90,
         "image": "classic choco chip.jpg",
         "desc": "Simple, classic, and irresistible."
     },
@@ -54,7 +54,7 @@ PRODUCTS = [
     {
         "id": "biscoff",
         "name": "Biscoff Cookie",
-        "price": 90,
+        "price": 95,
         "image": "biscoff cookie.jpg",
         "desc": "Soft-baked, buttery, and packed with Biscoff."
     },
@@ -64,6 +64,14 @@ PRODUCTS = [
         "price": 95,
         "image": "midnight s'mores.jpg",
         "desc": "Deep chocolate flavor with a molten marshmallow center."
+    },
+    {
+        "id": "promo",
+        "name": "Promo: Get All Four",
+        "price": 350,
+        "original_price": 370,
+        "image": "image_fb3b77.jpg",
+        "desc": "Get all four and save 20 pesos!"
     }
 ]
 
