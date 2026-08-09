@@ -25,12 +25,13 @@
         .logo {
             max-width: 300px;
             height: auto;
+            margin-bottom: 15px; /* Adds space between logo and tagline */
         }
         .tagline {
             color: var(--brand-blue);
             font-weight: bold;
             letter-spacing: 2px;
-            margin-top: -10px;
+            margin-top: 0;
         }
         .container {
             max-width: 1000px;
@@ -83,6 +84,8 @@
             border-radius: 5px;
             border: none;
             font-size: 1em;
+            width: 100%;
+            box-sizing: border-box;
         }
         button {
             background-color: var(--brand-beige);
@@ -102,6 +105,12 @@
             text-align: center;
             margin-bottom: 20px;
         }
+        
+        /* Hides the address field by default */
+        #address-group {
+            display: none; 
+        }
+
         footer {
             text-align: center;
             padding: 20px;
@@ -113,7 +122,6 @@
 <body>
 
     <header>
-        <!-- Updated to use the new logo.jpg filename -->
         <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Baked & Beyond Logo" class="logo">
         <p class="tagline">WHERE EVERY BITE FEELS LIKE HOME.</p>
     </header>
@@ -129,10 +137,11 @@
         <h2 style="text-align: center; color: var(--brand-blue);">Our Menu</h2>
         
         <div class="products-grid">
-            <!-- This loop automatically reads the updated filenames from your main_app.py file -->
             {% for product in products %}
             <div class="product-card">
-                <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+                <a href="{{ url_for('static', filename='images/' + product.image) }}" target="_blank">
+                    <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}" style="cursor: zoom-in;">
+                </a>
                 <div class="product-info">
                     <h3>{{ product.name }}</h3>
                     <p>{{ product.desc }}</p>
@@ -157,6 +166,18 @@
 
                 <input type="number" name="quantity" placeholder="Quantity" min="1" required>
                 
+                <!-- NEW: Delivery Option Toggle -->
+                <select name="delivery_option" id="delivery_option" required onchange="toggleAddress()">
+                    <option value="" disabled selected>Order Type (Pickup or Delivery)...</option>
+                    <option value="Pickup">Pickup</option>
+                    <option value="Delivery">Delivery</option>
+                </select>
+
+                <!-- NEW: Hidden Address Field -->
+                <div id="address-group">
+                    <input type="text" name="address" id="address" placeholder="Exact Delivery Address">
+                </div>
+
                 <select name="payment" required>
                     <option value="" disabled selected>Mode of Payment...</option>
                     <option value="Gcash">GCash</option>
@@ -172,9 +193,26 @@
 
     <footer>
         <p><strong>Baked & Beyond</strong></p>
-        <p>Contact: +63 9XX XXX XXXX | Email: orders@bakedandbeyond.com</p>
-        <p>📍 San Miguel, Central Luzon, Philippines</p>
+        <p>Contact: 09985852882 | Email: bakedandbeyondest2026@gmail.com</p>
+        <p>📍 Pasig City, Metro Manila, Philippines</p>
     </footer>
 
+    <!-- JavaScript to handle showing/hiding the address field -->
+    <script>
+        function toggleAddress() {
+            var deliveryOption = document.getElementById("delivery_option").value;
+            var addressGroup = document.getElementById("address-group");
+            var addressInput = document.getElementById("address");
+            
+            if (deliveryOption === "Delivery") {
+                addressGroup.style.display = "block";
+                addressInput.required = true; // Makes the address mandatory if they choose Delivery
+            } else {
+                addressGroup.style.display = "none";
+                addressInput.required = false;
+                addressInput.value = ""; // Clears the field if they switch back to Pickup
+            }
+        }
+    </script>
 </body>
 </html>
