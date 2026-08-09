@@ -13,31 +13,19 @@
         }
         h1 { text-align: center; color: #4B799E; }
         table {
-            width: 100%;
-            max-width: 1400px;
-            margin: 20px auto;
-            border-collapse: collapse;
-            background-color: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            font-size: 0.9em;
+            width: 100%; max-width: 1500px; margin: 20px auto;
+            border-collapse: collapse; background-color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-size: 0.9em;
         }
-        th, td {
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
+        th, td { padding: 10px 12px; border: 1px solid #ddd; text-align: left; }
         th { background-color: #4B799E; color: white; }
         tr:nth-child(even) { background-color: #f9f9f9; }
         
         .status-form { display: flex; gap: 5px; }
         .status-select { padding: 4px; border-radius: 4px; }
         .save-btn {
-            background-color: #4B799E;
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
+            background-color: #4B799E; color: white; border: none;
+            padding: 4px 8px; border-radius: 4px; cursor: pointer;
         }
         .save-btn:hover { background-color: #2C3E50; }
         
@@ -45,6 +33,7 @@
         .type-Delivery { color: #d9534f; }
         .type-Pickup { color: #5cb85c; }
         .ref-text { font-family: monospace; color: #004085; font-weight: bold; }
+        .total-text { font-weight: bold; color: #155724; }
     </style>
 </head>
 <body>
@@ -59,8 +48,8 @@
                 <th>Contact</th>
                 <th>Type</th>
                 <th>Address</th>
-                <th>Flavor</th>
-                <th>Qty</th>
+                <th>Order Details</th>
+                <th>Total (₱)</th>
                 <th>Payment</th>
                 <th>Ref. Number</th>
                 <th>Status</th>
@@ -74,8 +63,8 @@
                 <td>{{ order.contact }}</td>
                 <td class="type-badge type-{{ order.delivery_option }}">{{ order.delivery_option }}</td>
                 <td>{{ order.address }}</td>
-                <td>{{ order.flavor }}</td>
-                <td>{{ order.quantity }}</td>
+                <td>{{ order.order_details }}</td>
+                <td class="total-text">₱{{ order.total_cost }}</td>
                 <td>{{ order.payment }}</td>
                 <td class="ref-text">{{ order.reference_number }}</td>
                 <td>

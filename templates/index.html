@@ -47,7 +47,6 @@
         .price { color: var(--brand-blue); font-size: 1.2em; font-weight: bold; }
         .old-price { text-decoration: line-through; color: #888; font-size: 0.8em; margin-right: 5px; }
         
-        /* Add to Cart Buttons */
         .qty-controls {
             display: flex; justify-content: center; align-items: center; gap: 15px;
             margin-top: 10px; margin-bottom: 15px;
@@ -60,7 +59,6 @@
         .qty-btn:hover { background: var(--dark-text); }
         .qty-display { font-size: 1.2em; font-weight: bold; width: 20px; }
 
-        /* Cart Summary Section */
         .cart-summary {
             background: white; border: 2px solid var(--brand-blue);
             padding: 20px; border-radius: 10px; margin-bottom: 30px;
@@ -72,7 +70,7 @@
 
         .order-section {
             background: var(--brand-blue); color: white; padding: 30px;
-            border-radius: 10px; margin-bottom: 40px; display: none; /* Hidden until cart has items */
+            border-radius: 10px; margin-bottom: 40px; display: none; 
         }
         form { display: flex; flex-direction: column; gap: 15px; max-width: 500px; margin: 0 auto; }
         input, select, button { padding: 10px; border-radius: 5px; border: none; font-size: 1em; width: 100%; box-sizing: border-box; }
@@ -89,7 +87,6 @@
         #reference-group { background: var(--brand-beige); padding: 15px; border-radius: 8px; margin-top: 10px; }
         #reference-group label { color: var(--brand-blue); font-weight: bold; display: block; margin-bottom: 8px; }
 
-        /* Smooth Lightbox Modal */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); opacity: 0; transition: opacity 0.2s ease-out; }
         .modal.show { display: flex; align-items: center; justify-content: center; opacity: 1; }
         .modal-content { max-width: 90%; max-height: 90vh; border-radius: 12px; transform: scale(0.95); transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -133,7 +130,6 @@
                         ₱{{ product.price }}
                     </p>
                 </div>
-                <!-- Dynamic Quantity Buttons -->
                 <div class="qty-controls">
                     <button class="qty-btn" onclick="updateCart('{{ product.name }}', {{ product.price }}, -1)">-</button>
                     <span class="qty-display" id="qty-{{ product.name|replace(' ', '')|replace(':', '')|replace('\'', '') }}">0</span>
@@ -143,7 +139,6 @@
             {% endfor %}
         </div>
 
-        <!-- NEW: Visual Cart Summary -->
         <div class="cart-summary" id="cart-summary">
             <h2 style="text-align: center; color: var(--brand-blue); margin-top:0;">Your Order</h2>
             <div id="cart-items-list">
@@ -155,13 +150,11 @@
             </div>
         </div>
 
-        <!-- Order Form (Revealed when cart has items) -->
         <div class="order-section" id="order-form">
             <h2 style="text-align: center;">Checkout Details</h2>
             
             <form action="/" method="POST" id="main-order-form">
                 
-                <!-- Hidden inputs to send cart data to Python -->
                 <input type="hidden" name="order_details" id="hidden_order_details">
                 <input type="hidden" name="total_cost" id="hidden_total_cost">
 
@@ -184,7 +177,6 @@
                     <option value="Bank Transfer">Bank Transfer (Metrobank)</option>
                 </select>
 
-                <!-- Dynamic QR Section displaying Total -->
                 <div id="qr-container">
                     <h3 style="margin-top: 0; margin-bottom: 5px;">Scan to Pay</h3>
                     <div class="payment-amount" id="dynamic-payment-amount">₱0</div>
@@ -204,7 +196,6 @@
         </div>
     </div>
 
-    <!-- Lightbox Modal -->
     <div id="imageModal" class="modal" onclick="closeModal()">
         <img class="modal-content" id="expandedImg">
     </div>
@@ -216,7 +207,6 @@
     </footer>
 
     <script>
-        // --- Shopping Cart Logic ---
         let cart = {};
         let totalCost = 0;
 
@@ -268,29 +258,25 @@
                 let itemTotal = item.price * item.quantity;
                 totalCost += itemTotal;
                 
-                // Creates visual list
                 let div = document.createElement("div");
                 div.className = "cart-item";
                 div.innerHTML = `<span><b>${item.quantity}x</b> ${name}</span> <span>₱${itemTotal}</span>`;
                 cartList.appendChild(div);
                 
-                // Formats text for database (e.g. "2x Classic Choco Chip")
                 orderTextArray.push(`${item.quantity}x ${name}`);
             }
 
             grandTotalEl.innerText = `₱${totalCost}`;
-            qrTotalEl.innerText = `Please Pay: ₱${totalCost}`; // Updates QR code section
+            qrTotalEl.innerText = `Please Pay: ₱${totalCost}`; 
             totalDisplay.style.display = "flex";
-            orderFormSection.style.display = "block"; // Reveals checkout form
+            orderFormSection.style.display = "block"; 
 
-            // Update hidden inputs for Python to save
             hiddenOrderDetails.value = orderTextArray.join(", ");
             hiddenTotalCost.value = totalCost;
             
-            checkFormInputs(); // Re-verify form if cart changes while filling it out
+            checkFormInputs(); 
         }
 
-        // --- Checkout Logic ---
         function toggleAddress() {
             var deliveryOption = document.getElementById("delivery_option").value;
             var addressGroup = document.getElementById("address-group");
@@ -318,7 +304,7 @@
             
             let isFormValid = name && contact && delivery;
             if (delivery === "Delivery" && !address) isFormValid = false;
-            if (Object.keys(cart).length === 0) isFormValid = false; // Must have items
+            if (Object.keys(cart).length === 0) isFormValid = false; 
 
             if (!isFormValid && payment.value !== "") {
                 alert("Please fill out all contact and delivery details above before selecting a payment method.");
@@ -349,7 +335,6 @@
             if (payment.value !== "") handlePaymentSelection(); 
         }
 
-        // --- Smooth Modal Logic ---
         const modal = document.getElementById("imageModal");
         const expandedImg = document.getElementById("expandedImg");
 
