@@ -35,7 +35,6 @@ class Order(db.Model):
     status = db.Column(db.String(50), default="Pending")
     order_date = db.Column(db.DateTime, default=get_ph_time)
 
-# UPDATED: New pricing and promo bundle added
 PRODUCTS = [
     {
         "id": "classic",
@@ -68,10 +67,10 @@ PRODUCTS = [
     {
         "id": "promo",
         "name": "Promo: Get All Four",
-        "price": 350,
+        "price": 359,
         "original_price": 370,
-        "image": "image_fb3b77.jpg",
-        "desc": "Get all four and save 20 pesos!"
+        "image": "promo for one.jpg",
+        "desc": "Get all four and save 11 pesos!"
     }
 ]
 
@@ -82,13 +81,14 @@ with app.app_context():
 def home():
     order_success = False
     customer_name = ""
+    payment_method = ""
     
     if request.method == 'POST':
         customer_name = request.form.get('name')
         contact = request.form.get('contact')
         flavor = request.form.get('flavor')
         quantity = request.form.get('quantity')
-        payment = request.form.get('payment')
+        payment_method = request.form.get('payment')
         delivery_option = request.form.get('delivery_option')
         
         # If Pickup is selected, save 'N/A' as the address
@@ -99,7 +99,7 @@ def home():
             contact=contact, 
             flavor=flavor, 
             quantity=int(quantity), 
-            payment=payment,
+            payment=payment_method,
             delivery_option=delivery_option,
             address=address
         )
@@ -108,7 +108,7 @@ def home():
             
         order_success = True
 
-    return render_template('index.html', products=PRODUCTS, order_success=order_success, name=customer_name)
+    return render_template('index.html', products=PRODUCTS, order_success=order_success, name=customer_name, payment_method=payment_method)
 
 @app.route('/admin')
 def admin():
