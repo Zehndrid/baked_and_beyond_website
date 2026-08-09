@@ -89,5 +89,11 @@ def home():
 
     return render_template('index.html', products=PRODUCTS, order_success=order_success, name=customer_name)
 
+@app.route('/admin')
+def admin():
+    # Fetch all orders from the database
+    all_orders = Order.query.all()
+    return render_template('admin.html', orders=all_orders)
+    
 if __name__ == '__main__':
     app.run(debug=True)
