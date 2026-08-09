@@ -1,16 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.utils import secure_filename
 from datetime import datetime, timedelta
 import os
-import uuid
 
 app = Flask(__name__)
-
-# Configure where to save the uploaded receipts
-UPLOAD_FOLDER = 'static/receipts'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-os.makedirs(UPLOAD_FOLDER, exist_ok=True) # Automatically creates the folder if it doesn't exist
 
 # Connect to Render's Database URL, or use a local SQLite database for testing
 database_url = os.environ.get('DATABASE_URL', 'sqlite:///orders.db')
@@ -28,7 +21,7 @@ def get_ph_time():
 
 # Create the Database Model for Orders
 class Order(db.Model):
-    __tablename__ = 'customer_orders_v3' # Updated to V3 to add the receipt column
+    __tablename__ = 'customer_orders_v4' # Updated to V4 to add the reference number column
     id = db.Column(db.Integer, primary_key=True)
     customer_name = db.Column(db.String(100), nullable=False)
     contact = db.Column(db.String(100), nullable=False)
@@ -39,8 +32,8 @@ class Order(db.Model):
     delivery_option = db.Column(db.String(50), nullable=False)
     address = db.Column(db.String(255), nullable=True)
     
-    # NEW: Receipt Image Column
-    receipt_image = db.Column(db.String(255), nullable=True)
+    # NEW: Reference Number Column instead of receipt image
+    reference_number = db.Column(db.String(100), nullable=True)
     
     status = db.Column(db.String(50), default="Pending")
     order_date = db.Column(db.DateTime, default=get_ph_time)
@@ -91,7 +84,6 @@ with app.app_context():
 def home():
     order_success = False
     customer_name = ""
-    payment_method = ""
     
     if request.method == 'POST':
         customer_name = request.form.get('name')
@@ -103,16 +95,8 @@ def home():
         
         address = request.form.get('address') if delivery_option == 'Delivery' else 'N/A'
         
-        # Handle the receipt image upload
-        receipt_file = request.files.get('receipt')
-        receipt_filename = "N/A"
-        
-        if receipt_file and receipt_file.filename != '':
-            # Create a unique filename so customers don't overwrite each other's receipts
-            ext = receipt_file.filename.rsplit('.', 1)[1].lower() if '.' in receipt_file.filename else 'jpg'
-            receipt_filename = f"receipt_{uuid.uuid4().hex}.{ext}"
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], receipt_filename)
-            receipt_file.save(filepath)
+        # Capture the reference number
+        reference_number = request.form.get('reference_number', 'N/A')
         
         new_order = Order(
             customer_name=customer_name, 
@@ -122,7 +106,7 @@ def home():
             payment=payment_method,
             delivery_option=delivery_option,
             address=address,
-            receipt_image=receipt_filename
+            reference_number=reference_number
         )
         db.session.add(new_order)
         db.session.commit()
