@@ -22,22 +22,10 @@
             padding: 20px;
             background-color: var(--brand-beige);
         }
-        .logo {
-            max-width: 300px;
-            height: auto;
-            margin-bottom: 15px; 
-        }
-        .tagline {
-            color: var(--brand-blue);
-            font-weight: bold;
-            letter-spacing: 2px;
-            margin-top: 0;
-        }
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+        .logo { max-width: 300px; height: auto; margin-bottom: 15px; }
+        .tagline { color: var(--brand-blue); font-weight: bold; letter-spacing: 2px; margin-top: 0; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        
         .products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -45,154 +33,68 @@
             margin-bottom: 40px;
         }
         .product-card {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            text-align: center;
+            background: white; border-radius: 10px; overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center;
             border: 2px solid var(--brand-blue);
+            display: flex; flex-direction: column; justify-content: space-between;
         }
         .product-card img {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            cursor: zoom-in;
-            transition: transform 0.3s ease;
+            width: 100%; height: 250px; object-fit: cover;
+            cursor: zoom-in; transition: transform 0.3s ease;
         }
-        .product-card img:hover {
-            transform: scale(1.03); 
+        .product-card img:hover { transform: scale(1.03); }
+        .product-info { padding: 15px; }
+        .price { color: var(--brand-blue); font-size: 1.2em; font-weight: bold; }
+        .old-price { text-decoration: line-through; color: #888; font-size: 0.8em; margin-right: 5px; }
+        
+        /* Add to Cart Buttons */
+        .qty-controls {
+            display: flex; justify-content: center; align-items: center; gap: 15px;
+            margin-top: 10px; margin-bottom: 15px;
         }
-        .product-info {
-            padding: 15px;
+        .qty-btn {
+            background: var(--brand-blue); color: white; border: none;
+            width: 35px; height: 35px; border-radius: 50%; font-size: 1.2em;
+            cursor: pointer; font-weight: bold; transition: 0.2s;
         }
-        .price {
-            color: var(--brand-blue);
-            font-size: 1.2em;
-            font-weight: bold;
+        .qty-btn:hover { background: var(--dark-text); }
+        .qty-display { font-size: 1.2em; font-weight: bold; width: 20px; }
+
+        /* Cart Summary Section */
+        .cart-summary {
+            background: white; border: 2px solid var(--brand-blue);
+            padding: 20px; border-radius: 10px; margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
-        .old-price {
-            text-decoration: line-through;
-            color: #888;
-            font-size: 0.8em;
-            margin-right: 5px;
-        }
+        .cart-item { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px dashed #ccc; padding-bottom: 5px;}
+        .cart-total { display: flex; justify-content: space-between; font-size: 1.3em; font-weight: bold; color: var(--brand-blue); margin-top: 15px; }
+        .empty-cart-msg { text-align: center; color: #888; font-style: italic; }
+
         .order-section {
-            background: var(--brand-blue);
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 40px;
+            background: var(--brand-blue); color: white; padding: 30px;
+            border-radius: 10px; margin-bottom: 40px; display: none; /* Hidden until cart has items */
         }
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        input, select, button {
-            padding: 10px;
-            border-radius: 5px;
-            border: none;
-            font-size: 1em;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: var(--brand-beige);
-            color: var(--brand-blue);
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        button:hover {
-            background-color: white;
-        }
-        .success-msg {
-            background-color: #d4edda;
-            color: #155724;
-            padding: 20px;
-            border-radius: 5px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        #address-group {
-            display: none; 
-        }
+        form { display: flex; flex-direction: column; gap: 15px; max-width: 500px; margin: 0 auto; }
+        input, select, button { padding: 10px; border-radius: 5px; border: none; font-size: 1em; width: 100%; box-sizing: border-box; }
+        button[type="submit"] { background-color: var(--brand-beige); color: var(--brand-blue); font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button[type="submit"]:hover { background-color: white; }
         
-        #qr-container {
-            display: none;
-            background: white;
-            color: var(--dark-text);
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            margin-top: 10px;
-        }
-        .qr-image {
-            max-width: 250px;
-            height: auto;
-            border-radius: 8px;
-            display: none; 
-            margin: 0 auto;
-        }
-        .payment-note {
-            color: #d9534f;
-            font-weight: bold;
-            margin-top: 15px;
-            font-size: 0.95em;
-        }
+        .success-msg { background-color: #d4edda; color: #155724; padding: 20px; border-radius: 5px; text-align: center; margin-bottom: 30px; }
+        #address-group, #reference-group, #qr-container { display: none; }
         
-        /* Reference Number Input Styling */
-        #reference-group {
-            display: none;
-            background: var(--brand-beige);
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 10px;
-        }
-        #reference-group label {
-            color: var(--brand-blue);
-            font-weight: bold;
-            display: block;
-            margin-bottom: 8px;
-        }
+        #qr-container { background: white; color: var(--dark-text); padding: 20px; border-radius: 8px; text-align: center; margin-top: 10px; }
+        .qr-image { max-width: 250px; height: auto; border-radius: 8px; display: none; margin: 0 auto; }
+        .payment-amount { font-size: 1.5em; color: var(--brand-blue); font-weight: bold; margin: 10px 0; }
+        .payment-note { color: #d9534f; font-weight: bold; margin-top: 15px; font-size: 0.95em; }
+        #reference-group { background: var(--brand-beige); padding: 15px; border-radius: 8px; margin-top: 10px; }
+        #reference-group label { color: var(--brand-blue); font-weight: bold; display: block; margin-bottom: 8px; }
 
-        .modal {
-            display: none; 
-            position: fixed; 
-            z-index: 1000; 
-            left: 0; 
-            top: 0; 
-            width: 100%; 
-            height: 100%; 
-            background-color: rgba(0,0,0,0.85); 
-            opacity: 0;
-            transition: opacity 0.2s ease-out; 
-        }
-        .modal.show {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 1;
-        }
-        .modal-content {
-            max-width: 90%;
-            max-height: 90vh;
-            border-radius: 12px;
-            transform: scale(0.95);
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-        }
-        .modal.show .modal-content {
-            transform: scale(1);
-        }
-
-        footer {
-            text-align: center;
-            padding: 20px;
-            font-size: 0.9em;
-            color: var(--brand-blue);
-        }
+        /* Smooth Lightbox Modal */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); opacity: 0; transition: opacity 0.2s ease-out; }
+        .modal.show { display: flex; align-items: center; justify-content: center; opacity: 1; }
+        .modal-content { max-width: 90%; max-height: 90vh; border-radius: 12px; transform: scale(0.95); transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .modal.show .modal-content { transform: scale(1); }
+        footer { text-align: center; padding: 20px; font-size: 0.9em; color: var(--brand-blue); }
     </style>
 </head>
 <body>
@@ -231,25 +133,40 @@
                         ₱{{ product.price }}
                     </p>
                 </div>
+                <!-- Dynamic Quantity Buttons -->
+                <div class="qty-controls">
+                    <button class="qty-btn" onclick="updateCart('{{ product.name }}', {{ product.price }}, -1)">-</button>
+                    <span class="qty-display" id="qty-{{ product.name|replace(' ', '')|replace(':', '')|replace('\'', '') }}">0</span>
+                    <button class="qty-btn" onclick="updateCart('{{ product.name }}', {{ product.price }}, 1)">+</button>
+                </div>
             </div>
             {% endfor %}
         </div>
 
+        <!-- NEW: Visual Cart Summary -->
+        <div class="cart-summary" id="cart-summary">
+            <h2 style="text-align: center; color: var(--brand-blue); margin-top:0;">Your Order</h2>
+            <div id="cart-items-list">
+                <p class="empty-cart-msg">Add items from the menu above to start your order.</p>
+            </div>
+            <div class="cart-total" id="cart-total-display" style="display: none;">
+                <span>Total Amount:</span>
+                <span id="grand-total">₱0</span>
+            </div>
+        </div>
+
+        <!-- Order Form (Revealed when cart has items) -->
         <div class="order-section" id="order-form">
-            <h2 style="text-align: center;">Place Your Order</h2>
+            <h2 style="text-align: center;">Checkout Details</h2>
             
             <form action="/" method="POST" id="main-order-form">
+                
+                <!-- Hidden inputs to send cart data to Python -->
+                <input type="hidden" name="order_details" id="hidden_order_details">
+                <input type="hidden" name="total_cost" id="hidden_total_cost">
+
                 <input type="text" name="name" id="name" placeholder="Your Full Name" required oninput="checkFormInputs()">
                 <input type="text" name="contact" id="contact" placeholder="Phone Number / Email" required oninput="checkFormInputs()">
-                
-                <select name="flavor" id="flavor" required onchange="checkFormInputs()">
-                    <option value="" disabled selected>Select a Flavor...</option>
-                    {% for product in products %}
-                    <option value="{{ product.name }}">{{ product.name }} - ₱{{ product.price }}</option>
-                    {% endfor %}
-                </select>
-
-                <input type="number" name="quantity" id="quantity" placeholder="Quantity" min="1" required oninput="checkFormInputs()">
                 
                 <select name="delivery_option" id="delivery_option" required onchange="toggleAddress()">
                     <option value="" disabled selected>Order Type (Pickup or Delivery)...</option>
@@ -267,14 +184,16 @@
                     <option value="Bank Transfer">Bank Transfer (Metrobank)</option>
                 </select>
 
+                <!-- Dynamic QR Section displaying Total -->
                 <div id="qr-container">
-                    <h3 style="margin-top: 0;">Scan to Pay</h3>
+                    <h3 style="margin-top: 0; margin-bottom: 5px;">Scan to Pay</h3>
+                    <div class="payment-amount" id="dynamic-payment-amount">₱0</div>
+                    
                     <img src="{{ url_for('static', filename='images/gcash qr code.jpg') }}" id="qr-gcash" class="qr-image" alt="GCash">
                     <img src="{{ url_for('static', filename='images/metrobank qr code.jpg') }}" id="qr-bank" class="qr-image" alt="Metrobank">
-                    <p class="payment-note">⚠️ Note: You must pay first and input your reference number below to submit your order successfully.</p>
+                    <p class="payment-note">⚠️ Note: You must pay the total amount first and input your reference number below to submit your order successfully.</p>
                 </div>
 
-                <!-- NEW: Reference Number Input Box -->
                 <div id="reference-group">
                     <label for="reference_number">Payment Reference Number:</label>
                     <input type="text" name="reference_number" id="reference_number" placeholder="e.g. 0123456789123">
@@ -285,6 +204,7 @@
         </div>
     </div>
 
+    <!-- Lightbox Modal -->
     <div id="imageModal" class="modal" onclick="closeModal()">
         <img class="modal-content" id="expandedImg">
     </div>
@@ -296,6 +216,81 @@
     </footer>
 
     <script>
+        // --- Shopping Cart Logic ---
+        let cart = {};
+        let totalCost = 0;
+
+        function sanitizeId(name) {
+            return name.replace(/\s+/g, '').replace(/:/g, '').replace(/'/g, '');
+        }
+
+        function updateCart(productName, price, change) {
+            if (!cart[productName]) {
+                cart[productName] = { price: price, quantity: 0 };
+            }
+            
+            cart[productName].quantity += change;
+            
+            if (cart[productName].quantity <= 0) {
+                delete cart[productName];
+                document.getElementById('qty-' + sanitizeId(productName)).innerText = "0";
+            } else {
+                document.getElementById('qty-' + sanitizeId(productName)).innerText = cart[productName].quantity;
+            }
+            
+            renderCartSummary();
+        }
+
+        function renderCartSummary() {
+            const cartList = document.getElementById("cart-items-list");
+            const totalDisplay = document.getElementById("cart-total-display");
+            const grandTotalEl = document.getElementById("grand-total");
+            const orderFormSection = document.getElementById("order-form");
+            const qrTotalEl = document.getElementById("dynamic-payment-amount");
+            
+            const hiddenOrderDetails = document.getElementById("hidden_order_details");
+            const hiddenTotalCost = document.getElementById("hidden_total_cost");
+
+            cartList.innerHTML = "";
+            totalCost = 0;
+            let orderTextArray = [];
+
+            if (Object.keys(cart).length === 0) {
+                cartList.innerHTML = '<p class="empty-cart-msg">Add items from the menu above to start your order.</p>';
+                totalDisplay.style.display = "none";
+                orderFormSection.style.display = "none";
+                hiddenOrderDetails.value = "";
+                hiddenTotalCost.value = 0;
+                return;
+            }
+
+            for (const [name, item] of Object.entries(cart)) {
+                let itemTotal = item.price * item.quantity;
+                totalCost += itemTotal;
+                
+                // Creates visual list
+                let div = document.createElement("div");
+                div.className = "cart-item";
+                div.innerHTML = `<span><b>${item.quantity}x</b> ${name}</span> <span>₱${itemTotal}</span>`;
+                cartList.appendChild(div);
+                
+                // Formats text for database (e.g. "2x Classic Choco Chip")
+                orderTextArray.push(`${item.quantity}x ${name}`);
+            }
+
+            grandTotalEl.innerText = `₱${totalCost}`;
+            qrTotalEl.innerText = `Please Pay: ₱${totalCost}`; // Updates QR code section
+            totalDisplay.style.display = "flex";
+            orderFormSection.style.display = "block"; // Reveals checkout form
+
+            // Update hidden inputs for Python to save
+            hiddenOrderDetails.value = orderTextArray.join(", ");
+            hiddenTotalCost.value = totalCost;
+            
+            checkFormInputs(); // Re-verify form if cart changes while filling it out
+        }
+
+        // --- Checkout Logic ---
         function toggleAddress() {
             var deliveryOption = document.getElementById("delivery_option").value;
             var addressGroup = document.getElementById("address-group");
@@ -315,22 +310,18 @@
         function handlePaymentSelection() {
             const name = document.getElementById("name").value.trim();
             const contact = document.getElementById("contact").value.trim();
-            const flavor = document.getElementById("flavor").value;
-            const quantity = document.getElementById("quantity").value;
             const delivery = document.getElementById("delivery_option").value;
             const address = document.getElementById("address").value.trim();
             const payment = document.getElementById("payment_method");
-            
             const referenceGroup = document.getElementById("reference-group");
             const referenceInput = document.getElementById("reference_number");
             
-            let isFormValid = name && contact && flavor && quantity && delivery;
-            if (delivery === "Delivery" && !address) {
-                isFormValid = false;
-            }
+            let isFormValid = name && contact && delivery;
+            if (delivery === "Delivery" && !address) isFormValid = false;
+            if (Object.keys(cart).length === 0) isFormValid = false; // Must have items
 
             if (!isFormValid && payment.value !== "") {
-                alert("Please fill out all order details above before selecting a payment method.");
+                alert("Please fill out all contact and delivery details above before selecting a payment method.");
                 payment.value = ""; 
                 document.getElementById("qr-container").style.display = "none";
                 referenceGroup.style.display = "none";
@@ -341,7 +332,7 @@
             if (isFormValid && payment.value) {
                 document.getElementById("qr-container").style.display = "block";
                 referenceGroup.style.display = "block";
-                referenceInput.required = true; // Makes inputting the reference number mandatory
+                referenceInput.required = true; 
                 
                 if (payment.value === "Gcash") {
                     document.getElementById("qr-gcash").style.display = "block";
@@ -355,27 +346,22 @@
 
         function checkFormInputs() {
             const payment = document.getElementById("payment_method");
-            if (payment.value !== "") {
-                handlePaymentSelection(); 
-            }
+            if (payment.value !== "") handlePaymentSelection(); 
         }
 
+        // --- Smooth Modal Logic ---
         const modal = document.getElementById("imageModal");
         const expandedImg = document.getElementById("expandedImg");
 
         function openModal(imageSrc) {
             expandedImg.src = imageSrc;
             modal.style.display = "flex";
-            setTimeout(() => {
-                modal.classList.add("show");
-            }, 10);
+            setTimeout(() => { modal.classList.add("show"); }, 10);
         }
 
         function closeModal() {
             modal.classList.remove("show");
-            setTimeout(() => {
-                modal.style.display = "none";
-            }, 200);
+            setTimeout(() => { modal.style.display = "none"; }, 200);
         }
     </script>
 </body>
