@@ -131,9 +131,9 @@
                     </p>
                 </div>
                 <div class="qty-controls">
-                    <button class="qty-btn" onclick="updateCart('{{ product.name }}', {{ product.price }}, -1)">-</button>
+                    <button class="qty-btn" onclick="updateCart(`{{ product.name }}`, {{ product.price }}, -1)">-</button>
                     <span class="qty-display" id="qty-{{ product.name|replace(' ', '')|replace(':', '')|replace('\'', '') }}">0</span>
-                    <button class="qty-btn" onclick="updateCart('{{ product.name }}', {{ product.price }}, 1)">+</button>
+                    <button class="qty-btn" onclick="updateCart(`{{ product.name }}`, {{ product.price }}, 1)">+</button>
                 </div>
             </div>
             {% endfor %}
