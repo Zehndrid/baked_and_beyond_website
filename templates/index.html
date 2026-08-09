@@ -143,15 +143,15 @@
             font-size: 0.95em;
         }
         
-        /* Receipt Upload Styling */
-        #receipt-group {
+        /* Reference Number Input Styling */
+        #reference-group {
             display: none;
             background: var(--brand-beige);
             padding: 15px;
             border-radius: 8px;
             margin-top: 10px;
         }
-        #receipt-group label {
+        #reference-group label {
             color: var(--brand-blue);
             font-weight: bold;
             display: block;
@@ -206,7 +206,7 @@
         
         {% if order_success %}
         <div class="success-msg" id="success-message">
-            <strong>Thank you, {{ name }}!</strong> Your order and payment receipt have been successfully received. We will process your cookies shortly!
+            <strong>Thank you, {{ name }}!</strong> Your order and payment details have been successfully received. We will process your cookies shortly!
         </div>
         <script>
             document.addEventListener("DOMContentLoaded", function() {
@@ -238,8 +238,7 @@
         <div class="order-section" id="order-form">
             <h2 style="text-align: center;">Place Your Order</h2>
             
-            <!-- IMPORTANT: enctype="multipart/form-data" is required for file uploads -->
-            <form action="/" method="POST" id="main-order-form" enctype="multipart/form-data">
+            <form action="/" method="POST" id="main-order-form">
                 <input type="text" name="name" id="name" placeholder="Your Full Name" required oninput="checkFormInputs()">
                 <input type="text" name="contact" id="contact" placeholder="Phone Number / Email" required oninput="checkFormInputs()">
                 
@@ -272,13 +271,13 @@
                     <h3 style="margin-top: 0;">Scan to Pay</h3>
                     <img src="{{ url_for('static', filename='images/gcash qr code.jpg') }}" id="qr-gcash" class="qr-image" alt="GCash">
                     <img src="{{ url_for('static', filename='images/metrobank qr code.jpg') }}" id="qr-bank" class="qr-image" alt="Metrobank">
-                    <p class="payment-note">⚠️ Note: You must pay first and upload your receipt below to submit your order successfully.</p>
+                    <p class="payment-note">⚠️ Note: You must pay first and input your reference number below to submit your order successfully.</p>
                 </div>
 
-                <!-- NEW: Receipt Upload Box -->
-                <div id="receipt-group">
-                    <label for="receipt">Upload Screenshot of Payment Receipt:</label>
-                    <input type="file" name="receipt" id="receipt" accept="image/*">
+                <!-- NEW: Reference Number Input Box -->
+                <div id="reference-group">
+                    <label for="reference_number">Payment Reference Number:</label>
+                    <input type="text" name="reference_number" id="reference_number" placeholder="e.g. 0123456789123">
                 </div>
 
                 <button type="submit">Submit Order</button>
@@ -322,8 +321,8 @@
             const address = document.getElementById("address").value.trim();
             const payment = document.getElementById("payment_method");
             
-            const receiptGroup = document.getElementById("receipt-group");
-            const receiptInput = document.getElementById("receipt");
+            const referenceGroup = document.getElementById("reference-group");
+            const referenceInput = document.getElementById("reference_number");
             
             let isFormValid = name && contact && flavor && quantity && delivery;
             if (delivery === "Delivery" && !address) {
@@ -334,15 +333,15 @@
                 alert("Please fill out all order details above before selecting a payment method.");
                 payment.value = ""; 
                 document.getElementById("qr-container").style.display = "none";
-                receiptGroup.style.display = "none";
-                receiptInput.required = false;
+                referenceGroup.style.display = "none";
+                referenceInput.required = false;
                 return;
             }
 
             if (isFormValid && payment.value) {
                 document.getElementById("qr-container").style.display = "block";
-                receiptGroup.style.display = "block";
-                receiptInput.required = true; // Makes uploading the receipt mandatory
+                referenceGroup.style.display = "block";
+                referenceInput.required = true; // Makes inputting the reference number mandatory
                 
                 if (payment.value === "Gcash") {
                     document.getElementById("qr-gcash").style.display = "block";
