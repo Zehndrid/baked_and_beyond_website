@@ -106,12 +106,19 @@
         .success-msg {
             background-color: #d4edda;
             color: #155724;
-            padding: 15px;
+            padding: 20px;
             border-radius: 5px;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
-        
+        .qr-code {
+            max-width: 250px;
+            height: auto;
+            margin-top: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
         #address-group {
             display: none; 
         }
@@ -134,9 +141,28 @@
     <div class="container">
         
         {% if order_success %}
-        <div class="success-msg">
-            <strong>Thank you, {{ name }}!</strong> Your order has been placed successfully. We will contact you shortly.
+        <div class="success-msg" id="success-message">
+            <strong>Thank you, {{ name }}!</strong> Your order has been placed successfully.
+            
+            {% if payment_method == 'Gcash' %}
+            <p>Please scan the GCash QR code below to complete your payment.</p>
+            <img src="{{ url_for('static', filename='images/gcash qr code.jpg') }}" alt="GCash QR Code" class="qr-code">
+            
+            {% elif payment_method == 'Bank Transfer' %}
+            <p>Please scan the Metrobank QR code below to complete your payment.</p>
+            <img src="{{ url_for('static', filename='images/metrobank qr code.jpg') }}" alt="Metrobank QR Code" class="qr-code">
+            
+            {% else %}
+            <p>We will contact you shortly regarding your payment and order details.</p>
+            {% endif %}
         </div>
+        
+        <!-- JavaScript to automatically scroll the user to the success message and QR code -->
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                document.getElementById('success-message').scrollIntoView({ behavior: 'smooth' });
+            });
+        </script>
         {% endif %}
 
         <h2 style="text-align: center; color: var(--brand-blue);">Our Menu</h2>
@@ -151,7 +177,6 @@
                     <h3>{{ product.name }}</h3>
                     <p>{{ product.desc }}</p>
                     <p class="price">
-                        <!-- Displays old price with strikethrough if it exists (for the promo) -->
                         {% if product.original_price %}
                         <span class="old-price">₱{{ product.original_price }}</span>
                         {% endif %}
@@ -191,8 +216,7 @@
                     <option value="" disabled selected>Mode of Payment...</option>
                     <option value="Gcash">GCash</option>
                     <option value="Maya">Maya</option>
-                    <option value="Bank Transfer">Bank Transfer</option>
-                    <option value="Cash on Delivery">Cash on Delivery</option>
+                    <option value="Bank Transfer">Bank Transfer (Metrobank)</option>
                 </select>
 
                 <button type="submit">Submit Order</button>
