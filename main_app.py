@@ -21,18 +21,18 @@ def get_ph_time():
 
 # Create the Database Model for Orders
 class Order(db.Model):
-    __tablename__ = 'customer_orders_v4' # Updated to V4 to add the reference number column
+    __tablename__ = 'customer_orders_v5' # V5 upgrades to a shopping cart system
     id = db.Column(db.Integer, primary_key=True)
     customer_name = db.Column(db.String(100), nullable=False)
     contact = db.Column(db.String(100), nullable=False)
-    flavor = db.Column(db.String(100), nullable=False)
-    quantity = db.Column(db.Integer, nullable=False)
-    payment = db.Column(db.String(50), nullable=False)
     
+    # NEW: Replaced single flavor/quantity with a full cart string and total cost
+    order_details = db.Column(db.Text, nullable=False)
+    total_cost = db.Column(db.Integer, nullable=False)
+    
+    payment = db.Column(db.String(50), nullable=False)
     delivery_option = db.Column(db.String(50), nullable=False)
     address = db.Column(db.String(255), nullable=True)
-    
-    # NEW: Reference Number Column instead of receipt image
     reference_number = db.Column(db.String(100), nullable=True)
     
     status = db.Column(db.String(50), default="Pending")
@@ -88,21 +88,21 @@ def home():
     if request.method == 'POST':
         customer_name = request.form.get('name')
         contact = request.form.get('contact')
-        flavor = request.form.get('flavor')
-        quantity = request.form.get('quantity')
+        
+        # Capture the hidden cart details
+        order_details = request.form.get('order_details')
+        total_cost = request.form.get('total_cost')
+        
         payment_method = request.form.get('payment')
         delivery_option = request.form.get('delivery_option')
-        
         address = request.form.get('address') if delivery_option == 'Delivery' else 'N/A'
-        
-        # Capture the reference number
         reference_number = request.form.get('reference_number', 'N/A')
         
         new_order = Order(
             customer_name=customer_name, 
             contact=contact, 
-            flavor=flavor, 
-            quantity=int(quantity), 
+            order_details=order_details, 
+            total_cost=int(total_cost), 
             payment=payment_method,
             delivery_option=delivery_option,
             address=address,
