@@ -503,6 +503,13 @@
             .track-btn { width:100%; }
             .form-row { grid-template-columns:1fr; }
             .modal-body { padding:18px 20px 24px; }
+            /* ── Cart: collapse empty gap on mobile ── */
+            .cart-sidebar {
+                height: auto;
+                min-height: 100vh;
+                overflow-y: auto;
+            }
+            .cart-body { flex: none; overflow-y: visible; }
         }
         @media (max-width:480px) {
             .products-grid { grid-template-columns:1fr 1fr; gap:14px; }
