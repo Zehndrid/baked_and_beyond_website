@@ -40,7 +40,7 @@
         ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 99px; }
 
         /* ── Layout ── */
-        .layout { display: grid; grid-template-columns: 230px 1fr; min-height: 100vh; }
+        .layout { display: grid; grid-template-columns: auto 1fr; min-height: 100vh; }
 
         /* ── Sidebar ── */
         .sidebar {
@@ -48,6 +48,11 @@
             padding: 28px 18px; position: sticky; top: 0; height: 100vh;
             display: flex; flex-direction: column;
             box-shadow: 4px 0 20px rgba(44,62,80,0.15);
+            width: 230px; min-width: 230px;
+            overflow: hidden;
+            transition: width 0.3s cubic-bezier(0.4,0,0.2,1),
+                        min-width 0.3s cubic-bezier(0.4,0,0.2,1),
+                        padding 0.3s cubic-bezier(0.4,0,0.2,1);
         }
         .sb-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; padding-bottom: 22px; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .sb-logo-icon { width: 40px; height: 40px; background: var(--blue); border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
@@ -154,20 +159,88 @@
         .empty-state svg { width: 48px; height: 48px; opacity: 0.25; margin-bottom: 14px; }
         .empty-state p { font-size: 0.93rem; }
 
+        /* ── Sidebar collapse ── */
+        /* When collapsed — sidebar slides away smoothly via width transition */
+        .layout.sb-collapsed .sidebar { width:0; min-width:0; padding:0; }
+        /* ← Arrow button inside the logo header row */
+        .sb-collapse-top {
+            width:26px; height:26px; border-radius:50%; border:none; flex-shrink:0;
+            background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.6);
+            cursor:pointer; display:flex; align-items:center; justify-content:center;
+            transition:all var(--ease); margin-left:auto;
+        }
+        .sb-collapse-top:hover { background:rgba(255,255,255,0.22); color:white; }
+        .sb-collapse-top svg { width:14px; height:14px; }
+        /* Menu button shown in main area only when sidebar is collapsed */
+        .expand-sidebar-btn {
+            display:none; align-items:center; gap:6px; padding:7px 13px;
+            background:white; border:1.5px solid var(--beige-dkr); border-radius:var(--r-sm);
+            color:var(--mid); font-size:0.8rem; font-weight:600;
+            font-family:'Inter',sans-serif; cursor:pointer;
+            box-shadow:var(--shadow-sm); transition:all var(--ease);
+        }
+        .expand-sidebar-btn svg { width:15px; height:15px; }
+        .expand-sidebar-btn:hover { background:var(--dark); color:white; border-color:var(--dark); }
+        .layout.sb-collapsed .expand-sidebar-btn { display:flex; }
+
+        /* ── Delete button ── */
+        .del-btn {
+            width:30px; height:30px; border-radius:var(--r-sm);
+            border:1.5px solid rgba(231,76,60,0.3);
+            background:var(--red-lt); color:var(--red); cursor:pointer;
+            display:flex; align-items:center; justify-content:center;
+            transition:all var(--ease); flex-shrink:0;
+        }
+        .del-btn:hover { background:var(--red); color:white; border-color:var(--red); }
+        .del-btn svg { width:13px; height:13px; }
+
+        /* ── Deleted orders accordion ── */
+        .deleted-section { margin-top:24px; }
+        .deleted-accordion-btn {
+            width:100%; display:flex; align-items:center; gap:10px;
+            background:white; border:1px solid var(--beige-dk);
+            border-radius:var(--r-md); padding:14px 20px;
+            cursor:pointer; font-family:'Inter',sans-serif;
+            font-size:0.9rem; font-weight:700; color:var(--red);
+            box-shadow:var(--shadow-sm); transition:all var(--ease);
+        }
+        .deleted-accordion-btn:hover { background:var(--red-lt); }
+        .deleted-accordion-btn .count-badge {
+            background:var(--red-lt); color:var(--red);
+            font-size:0.72rem; padding:2px 9px; border-radius:99px;
+        }
+        .deleted-accordion-btn .chevron { margin-left:auto; transition:transform 0.2s; color:var(--light); }
+        .deleted-accordion-btn.open .chevron { transform:rotate(180deg); }
+        .deleted-body {
+            display:none; background:white;
+            border:1px solid var(--beige-dk); border-top:none;
+            border-radius:0 0 var(--r-md) var(--r-md);
+            overflow:hidden;
+        }
+        .deleted-body.open { display:block; }
+        .deleted-row { opacity:0.6; }
+
         /* ── Responsive ── */
         @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } .main { padding: 20px 16px; } }
     </style>
 </head>
 <body>
+{# Pre-compute active/deleted order sets so sidebar nav can use them #}
+{% set active_orders  = orders | rejectattr('status','equalto','Deleted') | list %}
+{% set deleted_orders = orders | selectattr('status','equalto','Deleted')  | list %}
 <div class="layout">
     <!-- SIDEBAR -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="admin-sidebar">
         <div class="sb-logo">
             <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Baked & Beyond Logo" style="width:40px;height:40px;border-radius:8px;object-fit:cover;flex-shrink:0;">
             <div class="sb-logo-text">
                 Baked &amp; Beyond
                 <div class="sb-logo-sub">Admin Dashboard</div>
             </div>
+            <!-- ← Collapse arrow at the top right of logo bar -->
+            <button class="sb-collapse-top" onclick="toggleSidebar()" title="Collapse sidebar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
         </div>
         <nav class="sb-nav">
             <div class="sb-nav-label">Management</div>
@@ -175,6 +248,13 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2"/><path d="M9 12h6M9 16h4"/></svg>
                 Orders
             </a>
+            {% if deleted_orders is defined and deleted_orders | length > 0 %}
+            <a href="#" class="sb-nav-item" onclick="event.preventDefault(); toggleDeletedSection()" style="color:rgba(231,76,60,0.8);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                Deleted Orders
+                <span style="margin-left:auto;background:rgba(231,76,60,0.2);color:rgba(231,76,60,0.9);font-size:0.65rem;padding:1px 7px;border-radius:99px;font-weight:700;">{{ deleted_orders | length }}</span>
+            </a>
+            {% endif %}
         </nav>
         <div class="sb-footer">
             <a href="/">
@@ -191,9 +271,16 @@
     <!-- MAIN -->
     <main class="main">
         <div class="page-header">
-            <div>
-                <h1 class="page-title">Customer Orders</h1>
-                <p class="page-sub">Manage and update all incoming orders</p>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <!-- Expand sidebar button (only shows when sidebar is collapsed) -->
+                <button class="expand-sidebar-btn" onclick="toggleSidebar()" title="Expand sidebar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+                    Menu
+                </button>
+                <div>
+                    <h1 class="page-title">Customer Orders</h1>
+                    <p class="page-sub">Manage and update all incoming orders</p>
+                </div>
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
                 <a href="/admin/export-csv" class="refresh-btn" id="csv-download-btn" style="background:white;color:#27AE60;border-color:rgba(39,174,96,0.35);" title="Download all orders as CSV backup">
@@ -215,11 +302,12 @@
 
 
         <!-- STATS -->
-        {% set pending_count   = orders | selectattr('status','equalto','Pending')   | list | length %}
-        {% set baking_count    = orders | selectattr('status','equalto','Baking')    | list | length %}
-        {% set delivered_count = orders | selectattr('status','equalto','Delivered') | list | length %}
-        {% set cancelled_count = orders | selectattr('status','equalto','Cancelled') | list | length %}
-        {% set total_revenue   = orders | selectattr('status','ne','Cancelled') | sum(attribute='total_cost') %}
+        {# active_orders and deleted_orders already set above the layout div #}
+        {% set pending_count   = active_orders | selectattr('status','equalto','Pending')   | list | length %}
+        {% set baking_count    = active_orders | selectattr('status','equalto','Baking')    | list | length %}
+        {% set delivered_count = active_orders | selectattr('status','equalto','Delivered') | list | length %}
+        {% set cancelled_count = active_orders | selectattr('status','equalto','Cancelled') | list | length %}
+        {% set total_revenue   = active_orders | rejectattr('status','equalto','Cancelled') | sum(attribute='total_cost') %}
 
         <div class="stats-grid">
             <div class="stat-card">
@@ -227,7 +315,7 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
                 </div>
                 <div class="stat-label">Total Orders</div>
-                <div class="stat-value">{{ orders | length }}</div>
+                <div class="stat-value">{{ active_orders | length }}</div>
             </div>
             <div class="stat-card">
                 <div class="stat-card-icon ic-yellow">
@@ -255,7 +343,7 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                 </div>
                 <div class="stat-label">Revenue</div>
-                <div class="stat-value val-purple">₱{{ total_revenue }}</div>
+                <div class="stat-value val-purple">&#x20B1;{{ total_revenue }}</div>
             </div>
         </div>
 
@@ -277,7 +365,7 @@
         <div class="table-wrap">
             <div class="table-bar">
                 <span class="table-bar-title">All Orders</span>
-                <span class="table-bar-count" id="order-count">{{ orders | length }} orders</span>
+                <span class="table-bar-count" id="order-count">{{ active_orders | length }} orders</span>
             </div>
             <div style="overflow-x:auto">
                 <table class="orders-table">
@@ -294,10 +382,11 @@
                             <th>Reference</th>
                             <th>Status</th>
                             <th>Update</th>
+                            <th>Delete</th>
                         </tr>
                     </thead>
                     <tbody id="orders-tbody">
-                        {% for order in orders %}
+                        {% for order in active_orders %}
                         <tr data-status="{{ order.status }}"
                             data-search="{{ order.customer_name.lower() }} {{ order.contact.lower() }} {{ order.order_details.lower() }}">
                             <td class="td-date">
@@ -358,10 +447,18 @@
                                     <button type="submit" class="save-btn">Save</button>
                                 </form>
                             </td>
+                            <td>
+                                <form action="/delete_order/{{ order.id }}" method="POST"
+                                      onsubmit="return confirm('Move order #{{ order.id }} from {{ order.customer_name }} to Deleted? This is reversible.')">
+                                    <button type="submit" class="del-btn" title="Delete order">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="11">
+                            <td colspan="12">
                                 <div class="empty-state">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
                                     <p>No orders yet. They'll appear here when customers start ordering!</p>
@@ -373,6 +470,60 @@
                 </table>
             </div>
         </div>
+
+        <!-- DELETED ORDERS ACCORDION -->
+        {% if deleted_orders %}
+        <div class="deleted-section">
+            <button class="deleted-accordion-btn" id="del-accordion-btn" onclick="toggleDeletedSection()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                Deleted Orders
+                <span class="count-badge">{{ deleted_orders | length }}</span>
+                <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="deleted-body" id="deleted-body">
+                <div style="overflow-x:auto">
+                    <table class="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Customer</th>
+                                <th>Contact</th>
+                                <th>Type</th>
+                                <th>Address</th>
+                                <th>Order Details</th>
+                                <th>Total</th>
+                                <th>Payment</th>
+                                <th>Reference</th>
+                                <th>Restore</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in deleted_orders %}
+                            <tr class="deleted-row">
+                                <td class="td-date">{{ order.order_date.strftime('%b %d, %Y') }}<small>{{ order.order_date.strftime('%I:%M %p') }}</small></td>
+                                <td class="td-name">{{ order.customer_name }}</td>
+                                <td class="td-contact">{{ order.contact }}</td>
+                                <td><span class="badge {% if order.delivery_option=='Delivery' %}b-delivery{% else %}b-pickup{% endif %}">{{ order.delivery_option }}</span></td>
+                                <td class="td-addr">{{ order.address if order.address != 'N/A' else '—' }}</td>
+                                <td class="td-order">{{ order.order_details }}</td>
+                                <td class="td-total">₱{{ order.total_cost }}</td>
+                                <td><span class="badge {% if order.payment=='Gcash' %}b-gcash{% else %}b-bank{% endif %}">{{ order.payment }}</span></td>
+                                <td class="td-ref">{{ order.reference_number if order.reference_number != 'N/A' else '—' }}</td>
+                                <td>
+                                    <form action="/update_status/{{ order.id }}" method="POST">
+                                        <input type="hidden" name="status" value="Pending">
+                                        <button type="submit" class="save-btn" style="background:var(--green);" title="Restore to Pending">Restore</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
     </main>
 </div>
 
@@ -395,6 +546,19 @@
             if (ok) v++;
         });
         document.getElementById('order-count').textContent = v + ' orders';
+    }
+
+    // Sidebar toggle
+    function toggleSidebar() {
+        document.querySelector('.layout').classList.toggle('sb-collapsed');
+    }
+
+    // Deleted orders accordion
+    function toggleDeletedSection() {
+        const btn = document.getElementById('del-accordion-btn');
+        const body = document.getElementById('deleted-body');
+        btn.classList.toggle('open');
+        body.classList.toggle('open');
     }
 </script>
 </body>

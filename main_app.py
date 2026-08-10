@@ -186,6 +186,15 @@ def update_status(order_id):
     db.session.commit()
     return redirect(url_for('admin'))
 
+@app.route('/delete_order/<int:order_id>', methods=['POST'])
+@login_required
+def delete_order(order_id):
+    """Soft-delete: marks order as Deleted (no rows are removed from the database)."""
+    order = Order.query.get_or_404(order_id)
+    order.status = "Deleted"
+    db.session.commit()
+    return redirect(url_for('admin'))
+
 @app.route('/admin/export-csv')
 @login_required
 def export_csv():
