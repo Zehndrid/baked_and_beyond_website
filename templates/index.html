@@ -336,7 +336,18 @@
             box-shadow:var(--shadow-lg);
             transform:scale(0.95) translateY(12px);
             transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+            scrollbar-width: thin;
+            scrollbar-color: var(--brand-blue) var(--beige-dk);
         }
+        .checkout-modal::-webkit-scrollbar { width: 5px; }
+        .checkout-modal::-webkit-scrollbar-track { background: var(--beige-dk); border-radius: 99px; }
+        .checkout-modal::-webkit-scrollbar-thumb { background: var(--brand-blue); border-radius: 99px; }
+        .checkout-modal::-webkit-scrollbar-thumb:hover { background: var(--brand-blue-dk); }
+        .cart-body { scrollbar-width: thin; scrollbar-color: var(--brand-blue) var(--beige-dk); }
+        .cart-body::-webkit-scrollbar { width: 4px; }
+        .cart-body::-webkit-scrollbar-track { background: transparent; }
+        .cart-body::-webkit-scrollbar-thumb { background: var(--beige-dkr); border-radius: 99px; }
+        .cart-body::-webkit-scrollbar-thumb:hover { background: var(--brand-blue); }
         .modal-overlay.open .checkout-modal { transform:scale(1) translateY(0); }
 
         .modal-head {
@@ -803,6 +814,11 @@
                 <input class="form-input" type="text" id="i-address" placeholder="Street, Barangay, City">
             </div>
 
+            <div id="delivery-notice" style="display:none; background:#FFF8E1; border:1.5px solid #F39C12; border-radius:10px; padding:11px 14px; margin-top:4px; margin-bottom:4px; display:none; align-items:flex-start; gap:9px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E6A817" stroke-width="2.2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span style="font-size:0.8rem;color:#7D5A00;line-height:1.55;"><strong>Delivery fee is shouldered by the buyer.</strong> We'll arrange your order via <strong>Lalamove</strong> or <strong>Grab Express</strong> — the delivery fee will be quoted to you separately before we dispatch your order.</span>
+            </div>
+
             <!-- Payment -->
             <div class="form-group">
                 <label class="form-label">Payment Method *</label>
@@ -983,8 +999,11 @@
     function onDeliveryChange() {
         const val = document.querySelector('input[name="del_opt"]:checked')?.value;
         const ag = document.getElementById('address-group');
-        ag.style.display = val === 'Delivery' ? 'block' : 'none';
-        if (val !== 'Delivery') document.getElementById('i-address').value = '';
+        const dn = document.getElementById('delivery-notice');
+        const isDelivery = val === 'Delivery';
+        ag.style.display = isDelivery ? 'block' : 'none';
+        dn.style.display = isDelivery ? 'flex' : 'none';
+        if (!isDelivery) document.getElementById('i-address').value = '';
     }
 
     function onPaymentChange() {
