@@ -686,11 +686,11 @@
             </div>
             <div class="qty-controls">
                 <div class="qty-inner">
-                    <button class="qty-btn" onclick="updateCart('{{ product.name }}',{{ product.price }},-1,'{{ url_for('static', filename='images/' + product.image) }}')" aria-label="Decrease">−</button>
-                    <span class="qty-display" id="qty-{{ product.name|replace(' ','',)|replace(':','')|replace("'","") }}">0</span>
-                    <button class="qty-btn" onclick="updateCart('{{ product.name }}',{{ product.price }},1,'{{ url_for('static', filename='images/' + product.image) }}')" aria-label="Increase">+</button>
+                    <button class="qty-btn" onclick="updateCart(`{{ product.name }}`,{{ product.price }},-1,`{{ url_for('static', filename='images/' + product.image) }}`)" aria-label="Decrease">−</button>
+                    <span class="qty-display" id="qty-{{ product.name|replace(' ','')|replace(':','')|replace("'",'') }}">0</span>
+                    <button class="qty-btn" onclick="updateCart(`{{ product.name }}`,{{ product.price }},1,`{{ url_for('static', filename='images/' + product.image) }}`)" aria-label="Increase">+</button>
                 </div>
-                <span class="cart-status" id="st-{{ product.name|replace(' ','',)|replace(':','')|replace("'","") }}">Add to cart</span>
+                <span class="cart-status" id="st-{{ product.name|replace(' ','')|replace(':','')|replace("'",'') }}">Add to cart</span>
             </div>
         </div>
         {% endfor %}
@@ -934,9 +934,9 @@
                     <div class="cart-row-unit">₱${item.price} each</div>
                 </div>
                 <div class="cart-row-qtys">
-                    <button class="cart-qty-btn" onclick="updateCart('${name}',${item.price},-1,'${imgMap[name]}')">−</button>
+                    <button class="cart-qty-btn" onclick="updateCart(\`${name}\`,${item.price},-1,\`${imgMap[name]}\`)">−</button>
                     <span class="cart-qty-num">${item.quantity}</span>
-                    <button class="cart-qty-btn" onclick="updateCart('${name}',${item.price},1,'${imgMap[name]}')">+</button>
+                    <button class="cart-qty-btn" onclick="updateCart(\`${name}\`,${item.price},1,\`${imgMap[name]}\`)">+</button>
                 </div>
                 <span class="cart-row-sub">₱${item.price * item.quantity}</span>`;
             frag.appendChild(row);
