@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login — Baked & Beyond</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --blue:    #4B799E;
+            --blue-dk: #2C5282;
+            --blue-lt: #EBF4FF;
+            --beige:   #F5EFE6;
+            --beige-dk:#EAE0D0;
+            --beige-dkr:#D4C9B5;
+            --dark:    #2C3E50;
+            --mid:     #4A6070;
+            --light:   #7A92A4;
+            --red:     #E74C3C;
+            --red-lt:  #FADBD8;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--blue-dk) 100%);
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+            position: relative; overflow: hidden;
+        }
+        /* subtle dot pattern */
+        body::before {
+            content: ''; position: absolute; inset: 0;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1.5px, transparent 1.5px);
+            background-size: 28px 28px; pointer-events: none;
+        }
+
+        .login-card {
+            background: white; border-radius: 24px;
+            width: 100%; max-width: 420px;
+            padding: 44px 40px;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+            position: relative; z-index: 1;
+            animation: popIn 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
+        }
+        @keyframes popIn { from{opacity:0;transform:scale(0.92) translateY(16px)} to{opacity:1;transform:scale(1) translateY(0)} }
+
+        .login-logo-wrap {
+            display: flex; flex-direction: column; align-items: center;
+            margin-bottom: 32px;
+        }
+        .login-logo-icon {
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg, var(--blue), var(--blue-dk));
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 14px;
+            box-shadow: 0 8px 24px rgba(75,121,158,0.35);
+        }
+        .login-logo-icon svg { width: 30px; height: 30px; color: white; }
+        .login-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+        .login-sub { font-size: 0.82rem; color: var(--light); }
+
+        .error-box {
+            background: var(--red-lt); border-left: 3px solid var(--red);
+            border-radius: 8px; padding: 12px 14px; margin-bottom: 20px;
+            display: flex; align-items: center; gap: 8px;
+            font-size: 0.84rem; color: var(--red); font-weight: 500;
+        }
+        .error-box svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--mid); margin-bottom: 6px; }
+        .input-wrap { position: relative; }
+        .input-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 17px; height: 17px; color: var(--light); pointer-events: none; }
+        .form-input {
+            width: 100%; padding: 12px 12px 12px 38px;
+            background: var(--beige); border: 1.5px solid var(--beige-dkr);
+            border-radius: 10px; font-family: 'Inter', sans-serif;
+            font-size: 0.9rem; color: var(--dark); outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .form-input:focus { border-color: var(--blue); background: white; box-shadow: 0 0 0 3px rgba(75,121,158,0.12); }
+        .form-input::placeholder { color: #bbb; }
+
+        .login-btn {
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, var(--blue), var(--blue-dk));
+            color: white; border: none; border-radius: 10px;
+            font-family: 'Inter', sans-serif; font-size: 0.96rem; font-weight: 700;
+            cursor: pointer; margin-top: 8px;
+            box-shadow: 0 4px 16px rgba(75,121,158,0.35);
+            transition: all 0.2s ease; letter-spacing: 0.3px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .login-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(75,121,158,0.45); }
+        .login-btn svg { width: 17px; height: 17px; }
+
+        .back-link { display: block; text-align: center; margin-top: 18px; font-size: 0.82rem; color: var(--light); text-decoration: none; transition: color 0.2s ease; }
+        .back-link:hover { color: var(--blue); }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="login-logo-wrap">
+            <div class="login-logo-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div class="login-title">Admin Access</div>
+            <div class="login-sub">Sign in to the Baked & Beyond dashboard</div>
+        </div>
+
+        {% if error %}
+        <div class="error-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form action="/admin/login" method="POST">
+            <div class="form-group">
+                <label class="form-label" for="username">Username</label>
+                <div class="input-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <input class="form-input" type="text" id="username" name="username" placeholder="Enter username" required autocomplete="username">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <div class="input-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <input class="form-input" type="password" id="password" name="password" placeholder="Enter password" required autocomplete="current-password">
+                </div>
+            </div>
+            <button type="submit" class="login-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                Sign In
+            </button>
+        </form>
+        <a href="/" class="back-link">← Back to store</a>
+    </div>
+</body>
+</html>
